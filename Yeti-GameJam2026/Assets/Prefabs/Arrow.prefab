@@ -81,10 +81,10 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 9cefbdacca362d64bb7e39ef7b12f151, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.8666667}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -107,8 +107,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
   sceneToDeactivate: {fileID: 0}
   sceneToActivate: {fileID: 0}
-  arrowSound: {fileID: 0}
-  volume: 1
+  arrowSound: {fileID: 8300000, guid: f7edcbf02d424d04cbcbd1241cbe965f, type: 3}
+  volume: 4
 --- !u!61 &1984169990064054472
 BoxCollider2D:
   m_ObjectHideFlags: 0

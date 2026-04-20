@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    public string itemID = "";
-    public Sprite itemSprite;
+    [Header("Items to Give")]
+    public string[] itemIDs; // Changed to array
+    public Sprite[] itemSprites; // Changed to array
     public bool obtainableItem = true;
 
     [Header("RequiredItem(Optional)")]
@@ -21,7 +22,6 @@ public class ItemPickup : MonoBehaviour
 
     [Header("Item visuals(Destroy if Empty)")]
     public Sprite changedSprite;
-
     private SpriteRenderer spriteRenderer;
     private bool isUsed = false;
 
@@ -37,6 +37,7 @@ public class ItemPickup : MonoBehaviour
         Hotbar hotbar = FindAnyObjectByType<Hotbar>();
         if (hotbar == null) return;
 
+        // 1. Check Requirements
         if (requiredItemIDs != null && requiredItemIDs.Length > 0)
         {
             foreach (string reqID in requiredItemIDs)
@@ -47,68 +48,59 @@ public class ItemPickup : MonoBehaviour
                     return;
                 }
             }
+
+            // 2. Consume Requirements
             if (consumeItemsOnUse)
             {
                 foreach (string reqID in requiredItemIDs)
                 {
-                    Debug.Log("Removing: " + reqID);
                     hotbar.RemoveItem(reqID);
+                }
+                // Play sound once for consumption
+                if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position, volume);
+            }
+        }
 
-                    if (changedSprite != null && spriteRenderer != null)
-                    {
-                        spriteRenderer.sprite = changedSprite;
-                        GetComponent<BoxCollider2D>().enabled = false;
-                    }
-                    else
-                    {
-                        if (!obtainableItem)
-                        {
-                            Destroy(gameObject);
-                        }
-                    }
+        // 3. Give Multiple Items
+        bool allItemsAdded = true;
+        if (itemIDs != null && itemIDs.Length > 0)
+        {
+            for (int i = 0; i < itemIDs.Length; i++)
+            {
+                // Check if we have a matching sprite for this ID
+                Sprite spriteToGive = (itemSprites.Length > i) ? itemSprites[i] : null;
+
+                if (!hotbar.AddItem(itemIDs[i], spriteToGive))
+                {
+                    allItemsAdded = false;
+                    Debug.Log("Inventory full while adding: " + itemIDs[i]);
                 }
             }
         }
 
-        if (hotbar != null)
+        // 4. Finalize Interaction (Only if items were successfully given or there were no items to give)
+        if (allItemsAdded)
         {
             isUsed = true;
 
-            // Fix: Loop through the arrays to toggle objects
+            // Toggle GameObjects
             foreach (GameObject obj in objectsToDeactivate) if (obj != null) obj.SetActive(false);
             foreach (GameObject obj in objectsToActivate) if (obj != null) obj.SetActive(true);
 
-            if (itemSprite != null && itemID.Length > 0)
-            { 
-                if (hotbar.AddItem(itemID, itemSprite))
-                {
-                    // Play sound at the item's location
-                    if (pickupSound != null)
-                    {
-                        AudioSource.PlayClipAtPoint(pickupSound, transform.position, volume);
-                    }
+            // Play pickup sound
+            if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position, volume);
 
-                    if (changedSprite != null && spriteRenderer != null)
-                    {
-                        spriteRenderer.sprite = changedSprite;
-                        GetComponent<BoxCollider2D>().enabled = false;
-                    }
-                    else
-                    {
-                        if (obtainableItem)
-                        {
-                            Destroy(gameObject);
-                        }
-                       
-                    }
-                }
-                else
-                {
-                    Debug.Log("Inventory full!");
-                }
+            // Handle visual changes or destruction
+            if (changedSprite != null && spriteRenderer != null)
+            {
+                spriteRenderer.sprite = changedSprite;
+                if (GetComponent<BoxCollider2D>() != null)
+                    GetComponent<BoxCollider2D>().enabled = false;
+            }
+            else if (obtainableItem)
+            {
+                Destroy(gameObject);
             }
         }
     }
 }
-
-

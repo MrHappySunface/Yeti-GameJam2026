@@ -16,5 +16,10 @@ public class Arrow : MonoBehaviour
 
         if (sceneToDeactivate != null) sceneToDeactivate.SetActive(false);
         if (sceneToActivate != null) sceneToActivate.SetActive(true);
+
+        if (arrowSound != null)
+        {
+            AudioSource.PlayClipAtPoint(arrowSound, transform.position, volume);
+        }
     }
 }
