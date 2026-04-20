@@ -9,12 +9,20 @@ public class Dialogue : MonoBehaviour
     public string[] lines;
     public float textSpeed;
 
+    public static bool isActive = false;
+
     private int index;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    void OnEnable()
     {
         textComponent.text = string.Empty;
         StartDialogue();
+        isActive = true;
+    }
+
+    void OnDisable()
+    {
+        isActive = false;        
     }
 
     // Update is called once per frame
